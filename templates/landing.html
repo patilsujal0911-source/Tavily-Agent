@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Northstar AI Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body class="landing-body">
+    <div class="landing-shell">
+      <nav class="landing-nav">
+        <div class="landing-brand">
+          <div class="landing-brand-mark">AI</div>
+          <span>Northstar Search</span>
+        </div>
+        <div class="landing-nav-links">
+          <a href="#about">About</a>
+          <a href="/app">Open Chat</a>
+        </div>
+      </nav>
+
+      <main>
+        <section class="hero-section">
+          <div class="hero-copy">
+            <h1>Search the web with <span>clarity</span>, speed, and confidence.</h1>
+            <p>Northstar combines live web research with a premium conversational experience so every answer feels informed, elegant, and trustworthy.</p>
+            <div class="hero-actions">
+              <a class="hero-btn" href="/app">Launch AI Chat</a>
+              <a class="hero-btn-secondary" href="#about">Explore Features</a>
+            </div>
+          </div>
+
+          <div class="hero-card" aria-label="Highlights">
+            <ul>
+              <li><strong>Live web discovery</strong> with Tavily-backed research.</li>
+              <li><strong>Streaming answers</strong> that feel fast and natural.</li>
+              <li><strong>Source-linked insights</strong> so every claim can be verified.</li>
+              <li><strong>Threaded memory</strong> for ongoing conversations.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="about" class="about-section">
+          <div class="about-grid">
+            <article class="about-card">
+              <h3>Smart Research</h3>
+              <p>Ask anything and receive concise insight backed by fresh web sources, not just generic phrasing.</p>
+            </article>
+            <article class="about-card">
+              <h3>Delightful UX</h3>
+              <p>Thoughtful motion, immersive spacing, and polished components make the experience feel high-end.</p>
+            </article>
+            <article class="about-card">
+              <h3>Transparent Answers</h3>
+              <p>When the agent searches the web, the response includes source links so you know where the information came from.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>© 2026 Northstar AI</span>
+        <span>Built for modern research and conversational search.</span>
+      </footer>
+    </div>
+  </body>
+</html>
