@@ -1,6 +1,11 @@
 Flask>=3.0.0
-langchain-xai>=0.2.0
-langchain-tavily>=0.1.0
+python-dotenv>=1.0.0
+
+langchain>=0.2.0
 langchain-core>=0.2.0
 langgraph>=0.2.0
-python-dotenv>=1.0.0
+
+langchain-groq>=0.2.0
+langchain-tavily>=0.1.0
+langchain-xai>=0.2.0
+typing_extensions>=4.10.0
