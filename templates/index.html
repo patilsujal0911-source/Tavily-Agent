@@ -1,55 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Search</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="brand">
-          <div class="brand-mark">AI</div>
-          <div>
-            <h1>AI <span>Search</span></h1>
-            <p>Live web reasoning</p>
-          </div>
-        </div>
-        <div class="status-pill">
-          <span class="status-dot"></span>
-          <span>Live</span>
-        </div>
-      </header>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat — Tavily Agent</title>
 
-      <main class="chat-shell">
-        <section id="messages" class="messages" aria-live="polite" aria-label="Chat messages"></section>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-        <form id="composer" class="composer">
-          <label class="input-shell" for="messageInput">
-            <input
-              id="messageInput"
-              name="message"
-              type="text"
-              placeholder="Ask anything…"
-              autocomplete="off"
-              spellcheck="true"
-              required
-            />
-          </label>
-          <button class="send-btn" type="submit">
-            <span>Send</span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-        </form>
-      </main>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="chat" data-theme="light">
+
+<!-- ============ LOADING SCREEN ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__mark">
+    <svg viewBox="0 0 48 48" class="sp-logo sp-logo--loader" role="img" aria-label="SP">
+      <rect x="1" y="1" width="46" height="46" rx="23" class="sp-logo__bg"/>
+      <text x="24" y="31" text-anchor="middle" class="sp-logo__text">SP</text>
+    </svg>
+  </div>
+  <div class="loader__bar"><span></span></div>
+</div>
+
+<div class="chat-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <svg viewBox="0 0 48 48" class="sp-logo" role="img" aria-label="SP monogram">
+        <rect x="1" y="1" width="46" height="46" rx="23" class="sp-logo__bg"/>
+        <text x="24" y="31" text-anchor="middle" class="sp-logo__text">SP</text>
+      </svg>
+      <span class="sidebar__brand-name">Tavily Agent</span>
     </div>
-  </body>
+
+    <button class="sidebar__new-chat" id="newChatBtn" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4v12M4 10h12"/></svg>
+      New Chat
+    </button>
+
+    <div>
+      <p class="sidebar__section-label">History</p>
+      <div class="sidebar__history" id="historyList">
+        <!-- Populated dynamically by script.js; server-rendered history can be
+             injected here by Flask (e.g. Jinja loop over a `conversations` list)
+             without altering existing routes. -->
+      </div>
+    </div>
+
+    <div class="sidebar__footer">
+      <a href="{{ url_for('landing') }}" class="sidebar__icon-btn" title="Back to home" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      </a>
+      <button class="sidebar__icon-btn theme-toggle" id="themeToggleChat" type="button" aria-label="Toggle theme">
+        <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+        <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+      </button>
+      <button class="sidebar__icon-btn" id="settingsBtn" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V19a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 2.6a1.7 1.7 0 0 0 1-1.55V1a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 7a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ CHAT MAIN ============ -->
+  <div class="chat-main">
+    <header class="chat-topbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <span class="chat-topbar__title">New research session</span>
+      </div>
+      <a href="{{ url_for('landing') }}" class="btn btn--ghost btn--sm">Exit chat</a>
+    </header>
+
+    <div class="chat-scroll" id="chatScroll">
+      <div class="chat-scroll__inner" id="chatInner">
+
+        <div class="chat-empty" id="chatEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" width="40" height="40" style="color:var(--accent-light)">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+          </svg>
+          <h2>Ask Tavily Agent anything</h2>
+          <p>Every answer is searched live and backed by numbered sources you can check.</p>
+        </div>
+
+        <!-- Messages are appended here at runtime by script.js -->
+
+      </div>
+    </div>
+
+    <div class="chat-input-dock">
+      <form class="chat-input glass" id="chatForm">
+        <textarea
+          id="chatTextarea"
+          rows="1"
+          placeholder="Ask a research question…"
+          aria-label="Message Tavily Agent"
+        ></textarea>
+        <button class="chat-input__send" id="chatSend" type="submit" aria-label="Send message" disabled>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 16V4M10 4l-5 5M10 4l5 5"/></svg>
+        </button>
+      </form>
+      <p class="chat-input__hint">Tavily Agent searches the live web — verify sources for high-stakes decisions.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ MESSAGE TEMPLATES (cloned by script.js) ============ -->
+<template id="tpl-user-message">
+  <div class="message message--user">
+    <div class="message__avatar">You</div>
+    <div class="message__body">
+      <p class="message__role">You</p>
+      <div class="message__content"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-agent-message">
+  <div class="message message--agent">
+    <div class="message__avatar">
+      <svg viewBox="0 0 48 48" width="16" height="16"><rect x="1" y="1" width="46" height="46" rx="23" fill="#ffffff" fill-opacity="0"/><text x="24" y="31" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="20" fill="#ffffff">S</text></svg>
+    </div>
+    <div class="message__body">
+      <p class="message__role">Tavily Agent</p>
+      <div class="message__content">
+        <span class="typing-indicator"><span></span><span></span><span></span></span>
+      </div>
+      <div class="source-cards" hidden></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-source-card">
+  <a class="source-card" target="_blank" rel="noopener">
+    <div class="source-card__top">
+      <span class="source-card__n"></span>
+      <span class="source-card__domain"></span>
+    </div>
+    <p class="source-card__title"></p>
+  </a>
+</template>
+
+<script>window.__INITIAL_MESSAGE__ = {{ initial_message|default('')|tojson }};</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
 </html>

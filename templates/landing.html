@@ -1,73 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Northstar AI Search</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  </head>
-  <body class="landing-body">
-    <div class="landing-shell">
-      <nav class="landing-nav">
-        <div class="landing-brand">
-          <div class="landing-brand-mark">AI</div>
-          <span>Northstar Search</span>
-        </div>
-        <div class="landing-nav-links">
-          <a href="#about">About</a>
-          <a href="/app">Open Chat</a>
-        </div>
-      </nav>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tavily Agent — Research the Web with Trusted AI</title>
+<meta name="description" content="Tavily Agent searches the live web, reads the sources, and writes a cited answer — in seconds.">
 
-      <main>
-        <section class="hero-section">
-          <div class="hero-copy">
-            <h1>Search the web with <span>clarity</span>, speed, and confidence.</h1>
-            <p>Northstar combines live web research with a premium conversational experience so every answer feels informed, elegant, and trustworthy.</p>
-            <div class="hero-actions">
-              <a class="hero-btn" href="/app">Launch AI Chat</a>
-              <a class="hero-btn-secondary" href="#about">Explore Features</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="landing" data-theme="light">
+
+<!-- ============ LOADING SCREEN ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__mark">
+    <svg viewBox="0 0 48 48" class="sp-logo sp-logo--loader" role="img" aria-label="SP">
+      <rect x="1" y="1" width="46" height="46" rx="23" class="sp-logo__bg"/>
+      <text x="24" y="31" text-anchor="middle" class="sp-logo__text">SP</text>
+    </svg>
+  </div>
+  <div class="loader__bar"><span></span></div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<header class="navbar" id="navbar">
+  <div class="navbar__inner">
+    <a href="#top" class="navbar__brand">
+      <svg viewBox="0 0 48 48" class="sp-logo" role="img" aria-label="SP monogram">
+        <rect x="1" y="1" width="46" height="46" rx="23" class="sp-logo__bg"/>
+        <text x="24" y="31" text-anchor="middle" class="sp-logo__text">SP</text>
+      </svg>
+      <span class="navbar__brand-name">Tavily Agent</span>
+    </a>
+
+    <nav class="navbar__links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it Works</a>
+      <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+
+    <div class="navbar__actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+        <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+        <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+      </button>
+      <a href="{{ url_for('index') }}" class="btn btn--primary btn--sm">Open Chat</a>
+    </div>
+
+    <button class="navbar__burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero__inner">
+      <div class="hero__copy reveal">
+        <span class="eyebrow eyebrow--plain">Premium research · live answers</span>
+        <h1 class="hero__title">Search the web with <span class="text-accent">clarity</span>, speed, and confidence.</h1>
+        <p class="hero__subtitle">
+          Tavily Agent combines live web research with a premium conversational experience,
+          so every answer feels informed, elegant, and trustworthy.
+        </p>
+        <div class="hero__actions">
+          <a href="{{ url_for('index') }}" class="btn btn--primary btn--lg">
+            Launch AI Chat
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+          </a>
+          <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn--ghost btn--lg">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.5v-1.94c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.9-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.05 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.92-2.35 4.78-4.58 5.04.36.32.68.94.68 1.9v2.82c0 .28.18.61.69.5A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__preview reveal" aria-hidden="true">
+        <div class="preview-card">
+          <div class="preview-card__head">
+            <span class="preview-card__label">Live preview</span>
+            <span class="preview-card__badge">Realtime</span>
+          </div>
+
+          <div class="preview-card__query">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="6"/><path d="M17 17l-3.6-3.6"/></svg>
+            <span>What changed in the EU AI Act in 2026?</span>
+          </div>
+
+          <div class="preview-tiles" id="previewTiles">
+            <div class="preview-tile" data-step="0">
+              <div class="preview-tile__icon">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="6"/><path d="M17 17l-3.6-3.6"/></svg>
+              </div>
+              <div>
+                <h4>Live web discovery</h4>
+                <p>Searching sources that keep pace with what's happening right now.</p>
+              </div>
+            </div>
+            <div class="preview-tile" data-step="1">
+              <div class="preview-tile__icon">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg>
+              </div>
+              <div>
+                <h4>Streaming answers</h4>
+                <p>Reading and weighing sources while the response is drafted, word by word.</p>
+              </div>
+            </div>
+            <div class="preview-tile" data-step="2">
+              <div class="preview-tile__icon">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10l4 4 8-9"/></svg>
+              </div>
+              <div>
+                <h4>Source-linked insights</h4>
+                <p>Every claim lands with a citation you can open and check instantly.</p>
+              </div>
             </div>
           </div>
 
-          <div class="hero-card" aria-label="Highlights">
-            <ul>
-              <li><strong>Live web discovery</strong> with Tavily-backed research.</li>
-              <li><strong>Streaming answers</strong> that feel fast and natural.</li>
-              <li><strong>Source-linked insights</strong> so every claim can be verified.</li>
-              <li><strong>Threaded memory</strong> for ongoing conversations.</li>
-            </ul>
+          <div class="preview-card__sources" id="previewSources">
+            <span class="source-chip"><span class="source-chip__n">1</span>europa.eu</span>
+            <span class="source-chip"><span class="source-chip__n">2</span>reuters.com</span>
+            <span class="source-chip"><span class="source-chip__n">3</span>oecd.ai</span>
           </div>
-        </section>
 
-        <section id="about" class="about-section">
-          <div class="about-grid">
-            <article class="about-card">
-              <h3>Smart Research</h3>
-              <p>Ask anything and receive concise insight backed by fresh web sources, not just generic phrasing.</p>
-            </article>
-            <article class="about-card">
-              <h3>Delightful UX</h3>
-              <p>Thoughtful motion, immersive spacing, and polished components make the experience feel high-end.</p>
-            </article>
-            <article class="about-card">
-              <h3>Transparent Answers</h3>
-              <p>When the agent searches the web, the response includes source links so you know where the information came from.</p>
-            </article>
+          <div class="preview-card__answer">
+            <p><span id="typingText"></span><span class="typing-cursor">|</span></p>
           </div>
-        </section>
-      </main>
-
-      <footer class="site-footer">
-        <span>© 2026 Northstar AI</span>
-        <span>Built for modern research and conversational search.</span>
-      </footer>
+        </div>
+      </div>
     </div>
-  </body>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="eyebrow">Tavily Agent demo</span>
+        <h2>Ask, inspect, ship.</h2>
+        <p>Three moves, every time you ask a question: search it, verify it, and take the answer with you.</p>
+      </div>
+
+      <div class="feature-grid">
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </div>
+          <h3>Live Search</h3>
+          <p>Every question triggers a real-time web search, so answers reflect what's true right now, not a training snapshot.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19.5V6a2 2 0 0 1 2-2h11l3 3v12.5a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 19.5Z"/><path d="M8 8h6M8 12h8M8 16h5"/></svg>
+          </div>
+          <h3>Deep Research</h3>
+          <p>For layered questions, Tavily Agent runs multiple search passes and cross-checks sources before drafting a response.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg>
+          </div>
+          <h3>Streaming</h3>
+          <p>Answers appear token by token as they're generated, so you start reading before the full response is ready.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="4" width="17" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <h3>AI Citations</h3>
+          <p>Claims are linked to the exact source they came from, shown as numbered cards you can open and verify.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a5 5 0 0 0-5 5c0 4-2 5-2 8a3 3 0 0 0 3 3c1 0 1.5-.5 2-1"/><path d="M12 3a5 5 0 0 1 5 5c0 4 2 5 2 8a3 3 0 0 1-3 3c-1 0-1.5-.5-2-1M12 8v9"/></svg>
+          </div>
+          <h3>Memory</h3>
+          <p>Tavily Agent keeps the thread of a conversation, so follow-up questions build on what you already asked.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          </div>
+          <h3>Export Reports</h3>
+          <p>Turn any research session into a clean, shareable document with sources and citations intact.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY ============ -->
+  <section class="why" id="why">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why Tavily Agent</span>
+        <h2>Built for people who check their sources</h2>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card reveal">
+          <span class="why-card__index">Fast</span>
+          <p>Search, read, and synthesis run in parallel, so a well-sourced answer usually takes seconds, not minutes.</p>
+        </div>
+        <div class="why-card reveal">
+          <span class="why-card__index">Reliable</span>
+          <p>The agent re-reads conflicting sources before answering, rather than settling on the first result it finds.</p>
+        </div>
+        <div class="why-card reveal">
+          <span class="why-card__index">Source-backed</span>
+          <p>No answer ships without a citation trail — you always know exactly where a claim came from.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="how" id="how-it-works">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="eyebrow">Under the hood</span>
+        <h2>How it works</h2>
+        <p>Four steps, run automatically for every question you ask.</p>
+      </div>
+
+      <ol class="timeline">
+        <li class="timeline__item reveal">
+          <div class="timeline__marker">01</div>
+          <div class="timeline__content">
+            <h3>Ask a question</h3>
+            <p>Type anything — a quick fact, a comparison, or an open-ended research question.</p>
+          </div>
+        </li>
+        <li class="timeline__item reveal">
+          <div class="timeline__marker">02</div>
+          <div class="timeline__content">
+            <h3>Search the web</h3>
+            <p>Tavily Agent queries live web sources relevant to your question in real time.</p>
+          </div>
+        </li>
+        <li class="timeline__item reveal">
+          <div class="timeline__marker">03</div>
+          <div class="timeline__content">
+            <h3>Analyze results</h3>
+            <p>Sources are read, compared, and filtered down to the ones worth citing.</p>
+          </div>
+        </li>
+        <li class="timeline__item reveal">
+          <div class="timeline__marker">04</div>
+          <div class="timeline__content">
+            <h3>Generate an answer</h3>
+            <p>A cited, streaming answer is written and shown alongside its source cards.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta">
+    <div class="section-inner cta__inner reveal">
+      <h2>Ready to research?</h2>
+      <p>Ask a question and watch Tavily Agent search, read, and answer — with sources attached.</p>
+      <a href="{{ url_for('index') }}" class="btn btn--primary btn--lg">
+        Launch AI Chat
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="section-inner footer__inner">
+    <div class="footer__brand">
+      <svg viewBox="0 0 48 48" class="sp-logo" role="img" aria-label="SP monogram">
+        <rect x="1" y="1" width="46" height="46" rx="23" class="sp-logo__bg"/>
+        <text x="24" y="31" text-anchor="middle" class="sp-logo__text">SP</text>
+      </svg>
+      <div>
+        <p class="footer__brand-name">Tavily Agent</p>
+        <p class="footer__brand-sub">Created by Sujal Patil</p>
+      </div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:hello@example.com">Email</a>
+    </div>
+
+    <p class="footer__copyright">© <span id="year"></span> Tavily Agent. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
 </html>
